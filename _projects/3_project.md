@@ -1,11 +1,12 @@
 ---
 layout: page
-title: project 3 with very long name
+title: StitchGen
 description: a project that redirects to another website
 img: assets/img/7.jpg
 redirect: https://unsplash.com
 importance: 3
 category: work
+status: ongoing
 ---
 
 Every project has a beautiful feature showcase page.

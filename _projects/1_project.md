@@ -1,11 +1,16 @@
 ---
 layout: page
-title: project 1
-description: with background image
+title: pMoE
+published: true          # 초안 제외
+show_on_home: true       # 홈 섹션 노출 허용 (버전에 따라 사용)
+# 또는
+visible: true            # 어떤 버전은 visible 사용
+description: with background image added some noisy next two make it two lines haha later fix
 img: assets/img/12.jpg
 importance: 1
 category: work
 related_publications: true
+status: past
 ---
 
 Every project has a beautiful feature showcase page.
