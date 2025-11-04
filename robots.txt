@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://MaverickJune.github.io/sitemap.xml
+Sitemap: https://maverickjune.github.io/sitemap.xml
