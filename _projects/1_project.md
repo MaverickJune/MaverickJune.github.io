@@ -1,86 +1,87 @@
 ---
 layout: page
-title: pMoE
+title: HPC Project
 published: true          # 초안 제외
 show_on_home: true       # 홈 섹션 노출 허용 (버전에 따라 사용)
 # 또는
 visible: true            # 어떤 버전은 visible 사용
-description: with background image added some noisy next two make it two lines haha later fix
-img: assets/img/12.jpg
+description: Optimizing GPT-2 on Multi-Node, Multi-GPU Environments
+img: assets/img/hpc_gpt2_resized.png
 importance: 1
 category: work
-related_publications: true
+related_publications: false
 status: past
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+The goal of this project is to **optimize GPT-2 inference on a cluster consisting of four nodes, each equipped with two GPUs.** <br>
+I utilized the MPI library to evenly distribute the given workload across the nodes and fully utilize the GPUs for optimal performance.
+All computation kernels were implemented from scratch using CUDA and C.
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
-
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+The main workflow of the project is contained in the following four files: `main.cpp`, `tensor.cu`, `model.cu`, and `layer.cu`. <br>
+In `main.cpp`, all the messy setup tasks, including initialization, MPI, and CUDA configurations, are handled. Then, the main generation function, generate_tokens(), is called. <br>
+**generate_tokens()** iterates over the transformer blocks and invokes the corresponding groups of GPU kernels for inference.
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid loading="eager" path="assets/img/transformer_loop.png" title="for-loop for transformer block execution" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
+    for-loop for transformer block execution
 </div>
+
+<!-- You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}. -->
+The **transformer_block_batch_multi_gpu()** function consists of many subfunctions with finer-grained computations. <br>
+Among them, mha_batch_multi_gpu() and ffn_batch_multi_gpu() incur most of the latency. <br>
+These functions are also composed of more fine-grained operations. Ultimately, we can identify the main operation of the entire system — the GEMM (mha -> attn -> matmul_batch_cuda).
+
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid loading="eager" path="assets/img/attn_func.png" title="The composition of the computation functions" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
-    This image can also have a caption. It's like magic.
+    The composition of the computation functions
 </div>
 
-You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}.
-Say you wanted to write a bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+The CUDA kernel for the GEMM operation is implemented as follows. <br>
+First, I tile the matrix into blocks so that each thread block can execute a separate region of the GEMM. <br>
+Then, I make each thread compute multiple elements within a block to reduce memory I/O. You can check the core part of this kernel design in the figure below. <br>
+**Valuable Reference:** [https://siboehm.com/articles/22/CUDA-MMM](https://siboehm.com/articles/22/CUDA-MMM)
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/gemm_core.png" title=" Move blocks to shared mem, and a thread compute multiple elements for I/O efficiency" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
+    Move blocks to shared mem, and a thread compute multiple elements for I/O efficiency
 </div>
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
+Now let me introduce the most important optimization I made throughout this project — **KV caching**, which boosts the throughput to another level.
+KV caching is a technique that saves the Key and Value states generated from the previous tokens and simply loads them during the current token generation.
+Since this technique removes the need to recompute these heavy states, it significantly reduces the overall computation required during the decoding phase.
 
-{% raw %}
-
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/kv_cache.png" title="Concept of KV Caching" class="img-fluid rounded z-depth-1" %}
+    </div>
 </div>
-```
+<div class="caption">
+    Concept of KV Caching
+</div>
 
-{% endraw %}
+All the optimizations I applied to build the inference system for GPT-2 resulted in a throughput of approximately 65,000 tokens/sec.
+The full codebase of this project is available on [GitHub](https://github.com/MaverickJune/HPC_GPT2_inference_optimization).
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/hpc_results.png" title="Final Throughput" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Final Throughput
+</div>
+
+
+

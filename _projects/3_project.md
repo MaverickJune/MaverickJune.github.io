@@ -1,82 +1,57 @@
 ---
 layout: page
-title: StitchGen
-description: a project that redirects to another website
-img: assets/img/7.jpg
-redirect: https://unsplash.com
-importance: 3
+title: SBVR Kernels
+published: true          # 초안 제외
+show_on_home: true       # 홈 섹션 노출 허용 (버전에 따라 사용)
+# 또는
+visible: true            # 어떤 버전은 visible 사용
+description: Hardware-Friendly Kernel Design of SBVR
+img: assets/img/sbvr_fig1_resized.png
+importance: 1
 category: work
+related_publications: false
 status: ongoing
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+First, I recommend reading the full paper on SBVR available at [arXiv](https://arxiv.org/abs/2509.18172).
+Here, I will discuss how we designed a GPU-friendly kernel for SBVR-formatted weights, focusing on the code-level details.
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+We defined a struct template to store the bitvectors in the SBVR format. 
+Each bitvector is divided into 32-bit integers, and one bitvector is stored in a struct instance named `bvr`.
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
-
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
-
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
-
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
-
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
-
-{% raw %}
-
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+<div class="row justify-content-center">
+  <div class="col-sm-auto mt-3 mt-md-0 text-center">
+    {% include figure.liquid 
+        loading="eager"
+        path="assets/img/bvr_format.png"
+        title="Struct template bvr (truncated at target-bit 6)"
+        class="img-fluid rounded z-depth-1"
+        style="width: 50%; height: auto; display: inline-block;" %}
   </div>
 </div>
-```
+<div class="caption">
+    Struct template bvr (truncated at target-bit 6)
+</div>
 
-{% endraw %}
+The interface of the kernel that actually computes the GEMV for the **SBVR format** is as follows.  
+It takes the following inputs:  
+
+- `l/r_bvr`: the set of bitvectors representing the LLM weights,  
+- `l/r_coeff_cache`: the corresponding coefficients for the bitvectors in the SBVR representation,  
+- `l/r_coeff_idx`: the indices indicating the coefficient positions for each bitvector in `coeff_cache`.
+
+
+<div class="row justify-content-center">
+  <div class="col-sm-auto mt-3 mt-md-0 text-center">
+    {% include figure.liquid 
+        loading="eager"
+        path="assets/img/sbvr_gemv_interface.png"
+        title="SBVR GEMV interface"
+        class="img-fluid rounded z-depth-1"
+        style="width: 50%; height: auto; display: inline-block;" %}
+  </div>
+</div>
+<div class="caption">
+    SBVR GEMV interface
+</div>
+
