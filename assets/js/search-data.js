@@ -18,7 +18,7 @@ ninja.data = [{
           },
         },{id: "nav-projects",
           title: "projects",
-          description: "A growing collection of your cool projects.",
+          description: "Collection of my past and ongoing projects.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/projects/";
@@ -409,19 +409,19 @@ ninja.data = [{
             },},{id: "news-a-simple-inline-announcement-with-markdown-emoji-sparkles-smile",
           title: 'A simple inline announcement with Markdown emoji! :sparkles: :smile:',
           description: "",
-          section: "News",},{id: "projects-pmoe",
-          title: 'pMoE',
-          description: "with background image added some noisy next two make it two lines haha later fix",
+          section: "News",},{id: "projects-hpc-project",
+          title: 'HPC Project',
+          description: "Optimizing GPT-2 on Multi-Node, Multi-GPU Environments",
           section: "Projects",handler: () => {
               window.location.href = "/projects/1_project/";
             },},{id: "projects-tllm",
           title: 'tLLM',
-          description: "a project with a background image and giscus comments",
+          description: "Building Energy-Optimal Systems for On-Device LLM Inference",
           section: "Projects",handler: () => {
               window.location.href = "/projects/2_project/";
-            },},{id: "projects-stitchgen",
-          title: 'StitchGen',
-          description: "a project that redirects to another website",
+            },},{id: "projects-sbvr-kernels",
+          title: 'SBVR Kernels',
+          description: "Hardware-Friendly Kernel Design of SBVR",
           section: "Projects",handler: () => {
               window.location.href = "/projects/3_project/";
             },},{
