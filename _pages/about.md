@@ -40,8 +40,14 @@ projects:
   sort_order: desc  
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+Hi! My name is Wonjun Bang, an enthusiastic researcher with a deep interest in systems for machine learning. 
+I am fascinated by how well-designed software systems can fully exploit the underlying hardware to serve high-demand, resource-intensive applications such as Machine Learning.
 
-Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
+Recently, my research has focused on enabling efficient inference of Large Language Models (LLMs) across various hardware platforms — from edge devices to data-center-scale servers.
 
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](https://fontawesome.com/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+Beyond that, I am also interested in optimizing the serving of resource-intensive AI models by intelligently leveraging their internal characteristics, such as activations and KV caches.
+
+You can check out some of my works and publications below.
+
+If you have any questions about me or my work, feel free to ask!  
+I always welcome discussions with people who share common interests. 😊
