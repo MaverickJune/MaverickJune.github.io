@@ -9,7 +9,7 @@ last_name: Bang
 # contact_note: >
 #   You can even add a little note about which of these is the best way to reach you.
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Systems for ML & LLM inference — quantization, serving, and edge-cloud collaboration.
+  M.S. Student in Electrical and Computer Engineering, Seoul National University
 footer_text: ""
 keywords: mlsys, llm serving, quantization, edge-cloud # add your own keywords or leave empty
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
